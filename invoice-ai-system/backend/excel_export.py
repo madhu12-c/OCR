@@ -78,7 +78,13 @@ class ExcelExporter:
                 
                 # Auto-size columns
                 column_letter = worksheet.cell(row=1, column=col).column_letter
-                max_length = max(df_summary.iloc[:, col-1].astype(str).map(len).max(), len(df_summary.columns[col-1])) + 2
+                # More robust length calculation to avoid TypeError with floats/None
+                col_data = df_summary.iloc[:, col-1]
+                content_max_len = 0
+                if not col_data.empty:
+                    content_max_len = col_data.apply(lambda x: len(str(x)) if pd.notnull(x) else 0).max()
+                
+                max_length = max(content_max_len, len(df_summary.columns[col-1])) + 2
                 worksheet.column_dimensions[column_letter].width = min(max_length, 40)
 
             # --- Style Sheet 2: Line Items ---
@@ -90,7 +96,9 @@ class ExcelExporter:
                 
                 column_letter = worksheet_items.cell(row=1, column=col).column_letter
                 if not df_items.empty:
-                    max_length = max(df_items.iloc[:, col-1].astype(str).map(len).max(), len(df_items.columns[col-1])) + 2
+                    col_data = df_items.iloc[:, col-1]
+                    content_max_len = col_data.apply(lambda x: len(str(x)) if pd.notnull(x) else 0).max()
+                    max_length = max(content_max_len, len(df_items.columns[col-1])) + 2
                     worksheet_items.column_dimensions[column_letter].width = min(max_length, 40)
 
         return output_path
