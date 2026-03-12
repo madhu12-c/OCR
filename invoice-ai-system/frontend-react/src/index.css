@@ -1,0 +1,102 @@
+:root {
+  --ios-bg: #F2F2F7;
+  --ios-card-bg: rgba(255, 255, 255, 0.8);
+  --ios-teal: #005A64;
+  --ios-cyan: #00E5FF;
+  --ios-label: #1C1C1E;
+  --ios-secondary-label: #8E8E93;
+  --ios-border: rgba(0, 0, 0, 0.05);
+  --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-heading: 'Outfit', sans-serif;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--ios-bg);
+  color: var(--ios-label);
+  font-family: var(--font-main);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-heading);
+}
+
+.glass {
+  background: var(--ios-card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--ios-border);
+}
+
+.squircle {
+  border-radius: 24px;
+}
+
+.ios-button {
+  background: var(--ios-teal);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s;
+}
+
+.ios-button:active {
+  transform: scale(0.96);
+}
+
+.ios-button:hover {
+  background: #004D55;
+}
+
+.ios-secondary-button:hover {
+  background: #F2F2F7;
+}
+
+.ios-secondary-button {
+  background: white;
+  color: var(--ios-teal);
+  border: 1px solid var(--ios-border);
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.meta-label {
+  display: block;
+  font-size: 11px;
+  color: var(--ios-secondary-label);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: bold;
+}
+
+.tab-pane {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

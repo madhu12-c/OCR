@@ -1,0 +1,8 @@
+streamlit
+pandas
+openpyxl
+groq
+pymupdf
+pillow
+python-dotenv
+imap_tools
