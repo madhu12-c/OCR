@@ -25,6 +25,9 @@ from fastapi.staticfiles import StaticFiles
 
 app = FastAPI(title="Infinx AP Tracker API")
 
+# Ensure the data directory exists before mounting
+os.makedirs("data", exist_ok=True)
+
 # Mount data for static file access (exports/uploads)
 app.mount("/data", StaticFiles(directory="data"), name="data")
 
