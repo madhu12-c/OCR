@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 
 // --- CONFIG ---
-axios.defaults.baseURL = 'http://localhost:8000';
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 const App = () => {
   const [invoices, setInvoices] = useState([]);
@@ -152,14 +152,16 @@ const App = () => {
 
   const downloadZip = async () => {
     try {
-      window.open('http://localhost:8000/api/export/zip', '_blank');
+      const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      window.open(`${baseUrl}/api/export/zip`, '_blank');
     } catch (err) { console.error(err); }
   };
 
   const downloadExcel = async () => {
     try {
       const resp = await axios.get('/api/export/excel');
-      window.open(`http://localhost:8000/${resp.data.file_url}`, '_blank');
+      const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      window.open(`${baseUrl}/${resp.data.file_url}`, '_blank');
     } catch (err) { console.error(err); }
   };
 

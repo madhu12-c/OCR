@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+python-multipart
+pandas
+openpyxl
+groq
+pymupdf
+pillow
+python-dotenv
+imap_tools
