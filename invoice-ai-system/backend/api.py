@@ -51,8 +51,28 @@ fetcher = OutlookFetcher()
 UPLOAD_DIR = "data/uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-# In-memory session store
+# In-memory session store (with file persistence for restarts)
 invoice_registry = []
+REGISTRY_FILE = "data/registry.json"
+
+def load_registry():
+    global invoice_registry
+    if os.path.exists(REGISTRY_FILE):
+        try:
+            with open(REGISTRY_FILE, "r") as f:
+                invoice_registry = json.load(f)
+        except Exception:
+            invoice_registry = []
+    else:
+        invoice_registry = []
+
+def save_registry():
+    global invoice_registry
+    with open(REGISTRY_FILE, "w") as f:
+        json.dump(invoice_registry, f)
+
+load_registry()
+
 app_config = {
     "groq_key": os.getenv("GROQ_API_KEY", ""),
     "email": os.getenv("OUTLOOK_EMAIL", ""),
@@ -87,6 +107,7 @@ async def run_extraction_worker(doc_id: str, file_path: str, filename: str):
                 if inv["id"] == doc_id:
                     inv["status"] = "Failed"
                     inv["vendor"] = "Unsupported Format"
+            save_registry()
             return
 
         data = extractor.extract_invoice_data(image_paths)
@@ -109,6 +130,7 @@ async def run_extraction_worker(doc_id: str, file_path: str, filename: str):
                         "raw_data": data
                     })
                 break
+        save_registry()
     except Exception as e:
         print(f"Background Extraction Worker Error: {e}")
         for inv in invoice_registry:
@@ -116,6 +138,7 @@ async def run_extraction_worker(doc_id: str, file_path: str, filename: str):
                 inv["status"] = "Failed"
                 inv["vendor"] = "System Error"
                 break
+        save_registry()
 
 @app.post("/api/extract")
 async def extract_invoice(background_tasks: BackgroundTasks, file: UploadFile = File(...)):
@@ -141,6 +164,7 @@ async def extract_invoice(background_tasks: BackgroundTasks, file: UploadFile = 
         "processed_at": time.strftime("%Y-%m-%d %H:%M:%S")
     }
     invoice_registry.insert(0, new_item) # Add to top of list
+    save_registry()
     
     # Offload extraction to background
     background_tasks.add_task(run_extraction_worker, doc_id, file_path, file.filename)
@@ -152,6 +176,7 @@ async def approve_invoice(invoice_id: str):
     for inv in invoice_registry:
         if inv["id"] == invoice_id:
             inv["status"] = "Approved"
+            save_registry()
             return {"status": "success"}
     raise HTTPException(status_code=404, detail="Invoice not found")
 
@@ -160,6 +185,7 @@ async def reject_invoice(invoice_id: str):
     for inv in invoice_registry:
         if inv["id"] == invoice_id:
             inv["status"] = "Rejected"
+            save_registry()
             return {"status": "success"}
     raise HTTPException(status_code=404, detail="Invoice not found")
 
@@ -168,6 +194,7 @@ async def pay_invoice(invoice_id: str):
     for inv in invoice_registry:
         if inv["id"] == invoice_id:
             inv["status"] = "Paid"
+            save_registry()
             return {"status": "success"}
     raise HTTPException(status_code=404, detail="Invoice not found")
 
@@ -175,6 +202,7 @@ async def pay_invoice(invoice_id: str):
 async def clear_all_invoices():
     global invoice_registry
     invoice_registry = []
+    save_registry()
     return {"status": "success"}
 
 @app.delete("/api/invoices/{invoice_id}")
@@ -183,6 +211,7 @@ async def delete_invoice(invoice_id: str):
     before_len = len(invoice_registry)
     invoice_registry = [i for i in invoice_registry if i["id"] != invoice_id]
     if len(invoice_registry) < before_len:
+        save_registry()
         return {"status": "success"}
     raise HTTPException(status_code=404, detail="Invoice not found")
 
@@ -208,6 +237,8 @@ async def sync_local(background_tasks: BackgroundTasks):
         }
         invoice_registry.insert(0, new_item)
         background_tasks.add_task(run_extraction_worker, doc_id, f["path"], f["filename"])
+    if files:
+        save_registry()
     return {"status": "success", "count": len(files)}
 
 @app.post("/api/sync/email")
@@ -232,6 +263,8 @@ async def sync_email(background_tasks: BackgroundTasks):
         }
         invoice_registry.insert(0, new_item)
         background_tasks.add_task(run_extraction_worker, doc_id, f["path"], f["filename"])
+    if files:
+        save_registry()
     return {"status": "success", "count": len(files)}
 
 @app.get("/api/export/excel")
