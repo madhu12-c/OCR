@@ -97,7 +97,7 @@ async def update_config(config: dict):
 async def get_invoices():
     return invoice_registry
 
-async def run_extraction_worker(doc_id: str, file_path: str, filename: str):
+def run_extraction_worker(doc_id: str, file_path: str, filename: str):
     """Background worker that performs the heavy LLM lifting."""
     try:
         image_paths = processor.prepare_file(file_path)
@@ -216,7 +216,7 @@ async def delete_invoice(invoice_id: str):
     raise HTTPException(status_code=404, detail="Invoice not found")
 
 @app.post("/api/sync/local")
-async def sync_local(background_tasks: BackgroundTasks):
+def sync_local(background_tasks: BackgroundTasks):
     files = scanner.scan_and_move()
     for f in files:
         doc_id = f"{int(time.time())}_{uuid.uuid4().hex[:6]}_{f['filename']}"
@@ -242,7 +242,7 @@ async def sync_local(background_tasks: BackgroundTasks):
     return {"status": "success", "count": len(files)}
 
 @app.post("/api/sync/email")
-async def sync_email(background_tasks: BackgroundTasks):
+def sync_email(background_tasks: BackgroundTasks):
     files = fetcher.fetch_attachments()
     for f in files:
         doc_id = f"{int(time.time())}_{uuid.uuid4().hex[:6]}_{f['filename']}"
@@ -268,7 +268,7 @@ async def sync_email(background_tasks: BackgroundTasks):
     return {"status": "success", "count": len(files)}
 
 @app.get("/api/export/excel")
-async def export_excel():
+def export_excel():
     path = excel_gen.export_to_excel(invoice_registry)
     if not path:
         raise HTTPException(status_code=400, detail="No data to export")
@@ -276,7 +276,7 @@ async def export_excel():
     return {"file_url": path.replace('\\', '/')}
 
 @app.get("/api/export/zip")
-async def export_zip():
+def export_zip():
     if not invoice_registry:
         raise HTTPException(status_code=400, detail="Registry empty")
     
