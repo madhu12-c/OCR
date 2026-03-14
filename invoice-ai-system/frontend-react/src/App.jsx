@@ -182,7 +182,7 @@ const App = () => {
   // --- SUB-RENDERERS ---
   const renderOverview = () => (
     <div className="tab-pane">
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px', marginBottom: '40px' }}>
+      <div className="stats-grid">
         {[
           { label: 'Ingested Documents', val: invoices.length, icon: FileText, color: 'var(--ios-teal)' },
           { label: 'Pending Audit', val: (Array.isArray(invoices) ? invoices : []).filter(i => i.status === 'Uploaded' || i.status === 'Pending').length, icon: Clock, color: '#FF9500' },
@@ -203,7 +203,7 @@ const App = () => {
 
       <div className="glass squircle" style={{ padding: '24px', marginBottom: '40px' }}>
         <h3 style={{ marginBottom: '20px' }}>Revenue Ingestion Console</h3>
-        <div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
+        <div className="revenue-console-buttons" style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
           {['Manual', 'Local Scan', 'Email Sync'].map(mode => (
             <div 
               key={mode} 
@@ -331,7 +331,7 @@ const App = () => {
           <option value="HOD 3">HOD 3</option>
         </select>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '24px' }}>
+      <div className="audit-grid">
         {invoices.filter(i => (i.status === 'Pending' || i.status === 'Uploaded') && (hodFilter === 'All' || i.assigned_hod === hodFilter)).map(inv => (
           <div key={inv.id} className="glass squircle" style={{ padding: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
@@ -384,7 +384,7 @@ const App = () => {
   const renderExports = () => (
     <div className="tab-pane">
        <h3 style={{ marginBottom: '25px' }}>Accounting Statements & Reconciliation</h3>
-       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '40px' }}>
+       <div className="export-grid">
           <div className="glass squircle" style={{ padding: '30px' }}>
               <div style={{ marginBottom: '20px', color: 'var(--ios-teal)' }}><FileText size={40} /></div>
               <h4>Consolidated Excel Statement</h4>
@@ -483,9 +483,9 @@ const App = () => {
   );
 
   return (
-    <div style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden' }}>
+    <div className="layout-container">
       {/* iOS Sidebar */}
-      <div className="glass" style={{ width: '280px', height: '100%', padding: '40px 20px', display: 'flex', flexDirection: 'column', zIndex: 10 }}>
+      <div className="glass sidebar">
         <div style={{ padding: '0 20px 40px', textAlign: 'center' }}>
           <h2 style={{ color: 'var(--ios-teal)', fontSize: '24px' }}>Infinx</h2>
           <span style={{ fontSize: '12px', color: 'var(--ios-cyan)', letterSpacing: '2px', fontWeight: 'bold' }}>AP TRACKER</span>
@@ -518,7 +518,7 @@ const App = () => {
       </div>
 
       {/* Main Content Area */}
-      <main style={{ flex: 1, padding: '40px 60px', overflowY: 'auto', position: 'relative' }}>
+      <main className="main-content">
         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
           <div>
             <h1 style={{ fontSize: '34px', marginBottom: '8px' }}>{activeTab === 'Overview' ? 'AP Overview' : activeTab}</h1>
@@ -707,9 +707,9 @@ const DetailModal = ({ invoice, onClose, onApprove, onReject, onPay, onAssign, o
           </div>
         )}
 
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '60px' }}>
+        <div className="modal-content">
           <div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', marginBottom: '60px' }}>
+            <div className="modal-stats">
                <div>
                   <h4 className="meta-label">Audit Control</h4>
                   <div style={{ padding: '16px', background: '#F2F2F7', borderRadius: '12px' }}>
@@ -751,7 +751,7 @@ const DetailModal = ({ invoice, onClose, onApprove, onReject, onPay, onAssign, o
               </table>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '40px' }}>
+            <div className="modal-taxes">
                {[
                  { label: 'CGST', val: invoice.raw_data.cgst_amount },
                  { label: 'SGST', val: invoice.raw_data.sgst_amount },

@@ -100,3 +100,131 @@ h1, h2, h3 {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+/* RESPONSIVE LAYOUT SYSTEM */
+.layout-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  flex-direction: row;
+}
+
+.sidebar {
+  width: 280px;
+  height: 100%;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.main-content {
+  flex: 1;
+  padding: 40px 60px;
+  overflow-y: auto;
+  position: relative;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.audit-grid {
+  display: grid;
+  grid-template-columns: repeat(autofill, minmax(360px, 1fr));
+  gap: 24px;
+}
+
+.export-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.modal-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 60px;
+}
+
+.modal-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 60px;
+}
+
+.modal-taxes {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+/* TABLET AND MOBILE BREAKPOINTS */
+@media (max-width: 1024px) {
+  .layout-container {
+    flex-direction: column;
+    overflow: auto;
+  }
+  .sidebar {
+    width: 100%;
+    height: auto;
+    padding: 20px;
+  }
+  .sidebar nav {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    padding-bottom: 10px;
+  }
+  .sidebar nav div {
+    margin-bottom: 0 !important;
+    white-space: nowrap;
+  }
+  .main-content {
+    padding: 20px;
+    height: auto;
+    overflow: visible;
+  }
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .modal-content {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .export-grid {
+    grid-template-columns: 1fr;
+  }
+  .audit-grid {
+    grid-template-columns: 1fr;
+  }
+  .modal-stats {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .modal-taxes {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  header {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 16px;
+  }
+  .revenue-console-buttons {
+    flex-wrap: wrap;
+  }
+}
